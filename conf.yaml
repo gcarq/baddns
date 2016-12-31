@@ -1,0 +1,34 @@
+ad-lists:
+  - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+  - http://adblock.gjtech.net/?format=unix-hosts
+  - http://hostsfile.mine.nu/Hosts
+  - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
+  - https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/porn/hosts
+
+tracking-lists:
+  - https://raw.githubusercontent.com/StevenBlack/hosts/master/data/tyzbit/hosts
+  - https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/win10/spy.txt
+  - https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/win7/spy.txt
+  - https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/win81/spy.txt
+  - https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
+
+malware-lists:
+  - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+  - https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
+  - https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt
+  - https://ransomwaretracker.abuse.ch/downloads/CW_C2_DOMBL.txt
+  - https://ransomwaretracker.abuse.ch/downloads/CW_PS_DOMBL.txt
+  - https://ransomwaretracker.abuse.ch/downloads/TC_C2_DOMBL.txt
+  - https://ransomwaretracker.abuse.ch/downloads/TC_PS_DOMBL.txt
+  - https://ransomwaretracker.abuse.ch/downloads/LY_C2_DOMBL.txt
+  - https://ransomwaretracker.abuse.ch/downloads/LY_PS_DOMBL.txt
+  - https://ransomwaretracker.abuse.ch/downloads/TL_C2_DOMBL.txt
+  - https://ransomwaretracker.abuse.ch/downloads/TL_PS_DOMBL.txt
+  - https://www.dshield.org/feeds/suspiciousdomains_Low.txt
+  - https://isc.sans.edu/feeds/suspiciousdomains_High.txt
+  - http://malwaredomains.lehigh.edu/files/justdomains
+  - https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt
+  - https://s3.amazonaws.com/lists.disconnect.me/simple_malware.txt
+
+social-network-lists:
+  - https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/social/hosts

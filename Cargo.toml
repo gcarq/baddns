@@ -1,0 +1,9 @@
+[package]
+name = "baddns"
+version = "0.1.0"
+authors = ["gcarq <michael.egger@tsn.at>"]
+
+[dependencies]
+hyper = "^0.9"
+clap = "^2.18"
+yaml-rust = "^0.3"
