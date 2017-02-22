@@ -8,6 +8,7 @@ use std::fmt;
 use std::result::Result;
 use std::ascii::AsciiExt;
 use std::path::PathBuf;
+use std::iter::FromIterator;
 
 extern crate hyper;
 use hyper::client::Client;
@@ -140,7 +141,7 @@ fn main() {
     };
 
     // yaml config keys
-    let keys = vec!["ad-lists", "tracking-lists", "malware-lists", "social-network-lists"];
+    let keys = vec!["domainlists"];
 
     // Open and parse conf
     let docs = YamlLoader::load_from_str(&load_conf("conf.yaml").unwrap()).unwrap();
@@ -151,6 +152,9 @@ fn main() {
             l.extend(get_urls_from_conf(&docs[0], k)); l
         });
 
+    // Load valid top level domains from iana.org
+    let valid_tlds = fetch_url("http://data.iana.org/TLD/tlds-alpha-by-domain.txt").unwrap();
+
     // Fetch lists and parse domains
     let domains: HashSet<String> = fetch_domainlists(urls)
         .unwrap()
@@ -158,6 +162,7 @@ fn main() {
         .map(|e| parse_hosts_entry(&e).to_string())
         .collect();
 
+    let domains = validate_domains(domains, HashSet::from_iter(valid_tlds));
     // Write generated domain list to file
     write_gen_list(domains, target, format, out).unwrap();
 }
@@ -178,22 +183,30 @@ fn get_urls_from_conf<'a>(root: &'a Yaml, key: &str) -> Vec<&'a str> {
 }
 
 fn fetch_domainlists(urls: HashSet<&str>) -> io::Result<HashSet<String>> {
-    let client = Client::new();
     let mut domains = HashSet::new();
     for url in urls {
-        if let Ok(mut res) = client.get(url).send() {
-            let mut content = String::new();
-            try!(res.read_to_string(&mut content));
-            let lines: Vec<String> = content.lines()
-                .into_iter()
-                .map(|l| strip_comment(l, '#').to_string())
-                .collect();
+        if let Ok(lines) = fetch_url(url) {
             domains.extend(lines);
         } else {
             writeln!(&mut io::stderr(), "Error: Unable to fetch: {}", url).unwrap();
         }
     }
     Ok(domains)
+}
+
+fn fetch_url(url: &str) -> io::Result<Vec<String>> {
+    let client = Client::new();
+    if let Ok(mut res) = client.get(url).send() {
+        let mut content = String::new();
+        try!(res.read_to_string(&mut content));
+        let lines: Vec<String> = content.lines()
+            .into_iter()
+            .filter(|l| !l.starts_with('#'))
+            .map(|l| l.to_lowercase())
+            .collect();
+        return Ok(lines);
+    }
+    return Ok(Vec::new());
 }
 
 fn load_conf(filename: &str) -> io::Result<String> {
@@ -203,40 +216,43 @@ fn load_conf(filename: &str) -> io::Result<String> {
     Ok(content)
 }
 
-fn strip_comment<'a>(string: &'a str, delim: char) -> &'a str {
-    match string.find(delim) {
-        Some(n) => string.split_at(n).0,
-        None => &string
-    }
-}
-
 fn parse_hosts_entry<'a>(line: &'a str) -> &'a str {
     let mut domains: Vec<&'a str> = line.split_whitespace()
         .into_iter()
         .filter(|&i| IpAddr::from_str(i).is_err())
         .collect();
 
+    // Sanity check to ensure a line contains only one domain
     if domains.len() == 1 {
-        return validate_domain(domains.pop().unwrap());
+        return domains.pop().unwrap();
     }
 
     writeln!(&mut io::stderr(),
-             "Ignoring entry: {}",
+             "Ignoring entry: {} (bogus line)",
              domains.join("")).unwrap();
     return "";
 }
 
-fn validate_domain<'a>(domain: &'a str) -> &'a str {
-    match domain.find('.') {
-        Some(_) => domain,
-        None => {
-            writeln!(&mut io::stderr(),
-                     "Ignoring entry: {}",
-                     &domain)
-                .unwrap();
-            ""
+fn validate_domains(domains: HashSet<String>, valid_tlds: HashSet<String>) -> HashSet<String> {
+    let mut valid_domains = HashSet::with_capacity(domains.len());
+    for d in domains {
+        let parts: Vec<&str> = d.split('.').collect();
+
+        // Check domain has at least to parts (e.g.: google.com)
+        if parts.len() < 2 {
+            writeln!(&mut io::stderr(), "Ignoring entry: {} (no valid domain)", d).unwrap();
+            continue;
         }
+
+        // Check if tld is valid
+        let tld = parts.last().unwrap().to_string();
+        if !valid_tlds.contains(&tld) {
+            writeln!(&mut io::stderr(), "Ignoring entry: {} (invalid tld)", d).unwrap();
+            continue;
+        }
+        valid_domains.insert(d.clone());
     }
+    valid_domains
 }
 
 fn write_gen_list(domains: HashSet<String>, target: Target,
