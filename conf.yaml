@@ -1,18 +1,18 @@
-ad-lists:
+domainlists:
   - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
   - http://adblock.gjtech.net/?format=unix-hosts
   - http://hostsfile.mine.nu/Hosts
   - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
   - https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/porn/hosts
 
-tracking-lists:
+  #tracking-lists
   - https://raw.githubusercontent.com/StevenBlack/hosts/master/data/tyzbit/hosts
   - https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/win10/spy.txt
   - https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/win7/spy.txt
   - https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/win81/spy.txt
   - https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
 
-malware-lists:
+  #malware-lists
   - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
   - https://zeustracker.abuse.ch/blocklist.php?download=domainblocklist
   - https://ransomwaretracker.abuse.ch/downloads/RW_DOMBL.txt
@@ -30,5 +30,5 @@ malware-lists:
   - https://s3.amazonaws.com/lists.disconnect.me/simple_malvertising.txt
   - https://s3.amazonaws.com/lists.disconnect.me/simple_malware.txt
 
-social-network-lists:
+  #social-network-lists
   - https://raw.githubusercontent.com/StevenBlack/hosts/master/alternates/social/hosts
